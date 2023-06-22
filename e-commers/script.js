@@ -1,6 +1,28 @@
 let cartIcon = document.querySelector('#cart-icon');
 let cart = document.querySelector('.cart');
 let closeCart = document.querySelector('#close-cart');
+let logo = document.querySelector(".logo")
+let productNumberInput = document.querySelector(".product-number")
+var productNumber = 0;
+
+
+
+var categoryInView = "all";
+
+logo.addEventListener('click', () => {
+  categoryInView = "all"
+  productNumber = 0;
+  fetchProducts()
+  
+})
+
+productNumberInput.addEventListener("input", (e) => {
+  let value = e.target.value;
+  if (value > 0 && value < 21) {
+    productNumber = value;
+    fetchProducts()
+  }
+})
 
 cartIcon.onclick = () => {
     cart.classList.add('active');
@@ -126,19 +148,25 @@ function updatetotal() {
     document.getElementsByClassName("total-price")[0].innerText = "$" + total;
   }
 
-  fetch('https://fakestoreapi.com/products')
-  .then(response => response.json())
-  .then(data => {
-    
-    console.log(data);
-    displayProducts(data);
-  })
-  .catch(error => {
-    console.error('Det uppstod ett fel:', error);
-  });
+  function fetchProducts() {
+    fetch('https://fakestoreapi.com/products')
+    .then(response => response.json())
+    .then(data => {
+      
+      console.log(data);
+      displayProducts(data);
+    })
+    .catch(error => {
+      console.error('Det uppstod ett fel:', error);
+    });
+  }
+  fetchProducts()
+
+
 
   function displayProducts(data) {
     var productsContainer = document.querySelector('.products-container');
+    productsContainer.innerHTML = "";
   
     for (var i = 0; i < data.length; i++) {
       var product = data[i];
@@ -176,9 +204,56 @@ function updatetotal() {
       productBox.appendChild(addProduct)
   
       productElement.appendChild(productBox);
-  
-      productsContainer.appendChild(productElement);
+
+      if (productNumber == 0) {
+        if (categoryInView == product.category || categoryInView == "all") {
+          console.log(categoryInView)
+          productsContainer.appendChild(productElement);
+        }
+      } else {
+        if (productNumber == product.id) {
+          productsContainer.appendChild(productElement);
+        }
+      }
+      
+      
+      
  
     }
   }
+
+function getCategories() {
+  
+
+    fetch('https://fakestoreapi.com/products/categories')
+    .then(response => response.json())
+    .then(data => { 
+      displayCategories(data);
+    })
+    .catch(error => {
+      console.error('Det uppstod ett fel:', error);
+    });
+}
+
+function displayCategories(data) {
+  var categoriesContainer = document.querySelector('.categories-container');
+
+  data?.forEach(category => {
+    var categoryBtn = document.createElement("button")
+    categoryBtn.classList.add("category-btn");
+    categoryBtn.innerText = category;
+    categoriesContainer.appendChild(categoryBtn)
+
+    categoryBtn.addEventListener("click", (e) => {
+      categoryInView = e.target.innerText
+      productNumber = 0;
+      fetchProducts()
+    })
+    
+    
+  });
+  
+}
+
+getCategories()
 
