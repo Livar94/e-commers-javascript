@@ -58,6 +58,17 @@ header {
 
 }
 
+.category-btn {
+    padding: 0.5em;
+    margin: 0.5em;
+    cursor: pointer;
+    background-color: #bb1f1f;
+    color: white;
+    border-radius: 0.5em;
+    
+    
+}
+
 .logo{
     font-size: 1.1rem;
     color: var(--text-color);
